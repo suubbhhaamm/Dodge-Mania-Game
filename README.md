@@ -12,9 +12,9 @@
 > Metally & Physically Stimulating  
   
 ## PROCESS TO SETUP  
-Step 1 - Download the project from github in zip file format.
-Step 2 - Extract the zip file on a folder.
-Step 3 - Run the carDodgeHtmlFile.html file on local browser.
+Step 1 - Download the project from github in zip file format.  
+Step 2 - Extract the zip file on a folder.  
+Step 3 - Run the carDodgeHtmlFile.html file on local browser.  
 Step 4 - Now you are all set to enjoy the game😄.  
   
 ## INSTRUCTION FOR GAME  
@@ -31,5 +31,5 @@ Step 4 - Now you are all set to enjoy the game😄.
   
 ![game-end-UI](https://user-images.githubusercontent.com/33429953/124158189-39e34c80-dab7-11eb-942c-2889aa414959.png)  
   
-Click [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript) to know about JavaScript.  
-Click [here](https://developer.mozilla.org/en-US/docs/Web) to know about Web Technology.
+**Click [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript) to know about JavaScript.  
+Click [here](https://developer.mozilla.org/en-US/docs/Web) to know about Web Technology.**
