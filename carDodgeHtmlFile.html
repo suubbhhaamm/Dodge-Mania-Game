@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <title>DODGE MANIA</title>
+
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@500&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="carDodgeCssFile.css">
+
+        <style></style>
+
+    </head>
+
+    <body>
+
+        <div class="carGame">
+            <div class="gameTitle">DODGE MANIA</div>
+            <div class="score"> </div>
+            <div class="levelTitle"> </div>
+            <div class="highscore"> </div>
+
+            <audio class="gameMusic" loop>
+                <source src="audios/battle.mp3" type="audio/mpeg">
+                <source src="audios/battle.ogg" type="audio/ogg">
+                Can't play music..
+            </audio>
+
+            <button class="playButton" onclick="playMusic();"> <img src="images/musicOn.png" alt="Play"> </button>
+            <button class="pauseButton" onclick="pauseMusic();"> <img src="images/musicOff.png" alt="Pause"> </button>
+            
+            <div class="instruction">*Press SPACE to pause but thrice in a game only*</div>
+            <div class="startScreen">
+                <p><b>**************Welecome to Car Dodge Mania**************</b><br><br>
+                    Press enter or arrow-up (⬆) to start😄<br><br>
+                    Use Arrow keys to move<br>
+                    If you hit any car then game over!
+                </p>
+            </div>
+            <div class="pauseScreen hide"> </div>
+            <div class="gameArea"> </div>
+        </div>
+
+
+    <!-------------------------------------------------JAVASCRIPT CODE----------------------------------------------------------------->
+
+        <script>
+
+            //querySelector is used instead of getElementById since only one copy of the field is in body.
+            //the 3 variable created at bottom to access the divs of page. Document refers to webpage.
+            const score = document.querySelector('.score');
+            const highscore = document.querySelector('.highscore');
+            const levelTitle = document.querySelector('.levelTitle');
+            const startScreen = document.querySelector('.startScreen');
+            const pauseScreen = document.querySelector('.pauseScreen');
+            const gameArea= document.querySelector('.gameArea');
+            const musicAudio = document.querySelector('.gameMusic');
+            var locallyStoredScore = localStorage.getItem('hscore');
+
+            console.log(gameArea);
+
+            //stores confirmation from player whether to play or not
+            let player = {speed : 7, objectSpeed : 6, score : 0};
+
+            //counter for increasing number of car by one only since increment in loop refer gamePlay() for this
+            //tempScore counter for score before and after of pause
+            //totalAvailablePause stores total number of pauses one can use throughout the game
+            //musicplaying counter keeps record that music is playing aur paused by button click
+            let counter1 = 0, counter2 = 0, counter3 = 0, gameStartCounter = 0, pauseCounter = 0, spaceCount = 0, totalAvailablePauses = 3, tempScore = 0, 
+                musicPlaying = 1;
+
+            //these keys corresponds to left, right, up and down keys of keyboard and by keeping false lets only one key to be pressed at a time.
+            let keys = {ArrowUp : false, ArrowDown : false, ArrowLeft : false, ArrowRight : false,
+                        w : false,       s : false,         a : false,         d : false,   Escape : false, Enter: false};
+
+            //addEventListener acknowledge key pressed and stores it for being pressed and released
+            document.addEventListener('keydown', keyDown);
+            document.addEventListener('keyup', keyUp);
+
+
+
+            //func keyDown is used to enact when any key is pressed
+            //e.preventDefault removes all the default fuction implementation to keyDown activity
+            function keyDown(e)
+            {
+                e.preventDefault();
+
+                //allows only the key pressed to be active and rest inactive. 
+                keys[e.key] = true;
+                
+                //upon clicking on enter game starts also to avoid game start upon further click of enter a counter is used that becomes zero when game ends
+                if((keys.Enter || keys.ArrowUp || keys.w) && gameStartCounter == 0) { start(); gameStartCounter = 1;}
+
+                if(e.which == 32) spaceCount++;
+
+                //game being paused on pressing space button 
+                if(e.which == 32 && pauseCounter == 0 && gameStartCounter == 1 && spaceCount % 2 != 0 && totalAvailablePauses > 0)
+                {
+                    pauseCounter = 1;
+                    totalAvailablePauses--;
+                    gamePaused();
+                }
+
+                //game being resumed on pressing space button
+                if(e.which == 32 && pauseCounter == 1 && gameStartCounter == 1 && spaceCount % 2 == 0)
+                {
+                    pauseCounter = 0;
+                    gameResume();
+                }
+
+                
+            }
+
+
+
+            //func keyUp is used to enact when any key is released, so, keyDown will be same as keyUp pretty obvious
+            function keyUp(e)
+            {
+                e.preventDefault();
+                //upon releasing the pressed key becomes inactive again by line given below that maintains the rule of one key being pressed at a time 
+                keys[e.key] = false;
+            }
+
+
+
+            //this func is called upon collision of player and enemy car i.e on game over
+            function endGame()
+            {
+                //reloads the music on game end
+                if(musicPlaying == 1) musicAudio.load();
+
+                player.start = false;
+
+                //counter becomes zero so that game again can be start on click of enter
+                gameStartCounter = 0;
+
+                totalAvailablePauses = 3;
+                spaceCount = 0;
+
+                //make startScreen again visible upon game over
+                startScreen.classList.remove('hide');
+
+                //updates the locally stored high score to new high score by comparing locallyStoredScore variable
+                if(player.score > locallyStoredScore) 
+                {
+                    localStorage.setItem('hscore',  player.score);
+                    highscore.innerHTML = "HighScore: " + player.score;
+                }
+
+                //instruction to show on start screen upon game over
+                startScreen.innerHTML = "*******************************Game Over******************************* <br><br> Your final score is : " + player.score + 
+                    "<br><br> Press enter or arrow-up (⬆) to play again😃";
+
+                if(player.score > locallyStoredScore) alert("Congratulation!! you set a new High Score- " + player.score + "😃😃\nPress enter to continue...");
+            }
+
+
+
+
+            //here a is for players car and b is for enemy car, underlying fuction is fuctionality for cars colliding
+            function isCollide(a, b)
+            {
+                //getting boundary and position values of car and enemy car
+                aRect = a.getBoundingClientRect();
+                bRect = b.getBoundingClientRect();
+
+                //any of the 4 condition given below if becomes true means collision occured and returns false
+                //1st cond means player car above of enemy car situation
+                //2nd cond means player car below of enemy car situation
+                //3rd cond means player car left of enemy car situation
+                //4th cond means player car right of enemy car situation
+                return !((aRect.bottom < bRect.top) || (aRect.top > bRect.bottom) || (aRect.right < bRect.left) || (aRect.left > bRect.right));
+            }
+
+
+
+            //resposible for moving of lines on road
+            function moveLines()
+            {
+                //selects all the object in lines class which refer all the lines road i.e. gameArea
+                let lines = document.querySelectorAll('.lines');
+
+                //underlying func moves all the lines towards bottom to show movement of vehicle on road
+                //here foreach loop is used to take all the lines on road and shift them dowm by adding to there pixel position
+                lines.forEach(function(item)
+                {
+                    //with this condition when any lines touches bottom of screen then moves them up by changing there pixel position 
+                    if(item.y >= 660) item.y -= 750;
+
+                    item.y += player.objectSpeed;
+                    item.style.top = item.y + "px";
+                });
+            }
+
+
+
+            //responsible for moving enemy cars on road
+            function moveEnemy(car)
+            {
+                //selects all the object in lines class which refer all the lines road i.e. gameArea
+                let enemy = document.querySelectorAll('.enemy');
+
+                //underlying func moves all the lines towards bottom to show movement of vehicle on road
+                //here foreach loop is used to take all the lines on road and shift them dowm by adding to there pixel position
+                enemy.forEach(function(item)
+                {
+                    //underlying func return true if player and enemy car collides
+                    if(isCollide(car, item)) endGame();
+
+                    //with this condition when any car touches bottom of screen then moves them up by changing there pixel position 
+                    if(item.y >= 660) 
+                    {
+                        //this deduction is for all 4th car i.e. is repeated since get stuck with 3rd car if this is not there 
+                        item.y = -220;
+                        item.style.left = Math.floor(Math.random() * 350) + "px";
+                    }
+                    item.y += player.objectSpeed;
+                    item.style.top = item.y + "px";
+                });
+            }
+
+
+
+            ////things added and removed on game being paused
+            function gamePaused()
+            {
+                //pauses the music on game paused
+                if(musicPlaying == 1) musicAudio.pause();
+
+                //to temporarily store player score that gets destroyed on pausing
+                tempScore = player.score;
+
+                //stopping the game on being paused
+                player.start = false;
+
+                gameArea.classList.add('hide');
+                pauseScreen.classList.remove('hide');
+                pauseScreen.innerHTML = "*******************GAME PAUSED*******************<br><br>Press space to resume the run😃";
+
+            }
+
+
+
+            //things added and removed on game being resumed
+            function gameResume()
+            {
+                //plays the music on game resume
+                if(musicPlaying == 1) musicAudio.play();
+
+                pauseScreen.classList.add('hide');
+                gameArea.classList.remove('hide');
+
+                //begining the game again with divs again being craeted on resuming
+                start();
+
+                //again reassigning the scores on resume
+                player.score = tempScore;
+                counter1 = 0; counter2 = 0; counter3 = 0;
+            }
+
+
+
+            //Game level managed with scores
+            function gameLevels()
+            {
+                //speed of object increasing to increase the level also number of car increases
+                if(player.score < 500) 
+                    { 
+                        player.objectSpeed = 5;
+                        counter1 = 0; counter2 = 0; counter3 = 0;
+                        levelTitle.innerHTML = "Title: <b>Beginner</b>";
+                    }
+                    else if(player.score > 500 && player.score < 1000) player.objectSpeed = 6;
+                    else if(player.score > 1000 && player.score < 1500) { player.objectSpeed = 7; levelTitle.innerHTML = "Title: <b>Novice</b>";}
+                    else if(player.score > 1500 && player.score < 2000) 
+                    { 
+                        player.objectSpeed = 7;
+                        if(counter1++ == 0) 
+                        { 
+                            let enecar= document.querySelectorAll('.enemy'); 
+                            enecar.forEach(function(item)
+                            {
+                                item.classList.add('hide');
+                            });      
+                            
+                            createEnemyCar(4); 
+                        }
+                    }
+                    else if(player.score > 2000 && player.score < 2625) { player.objectSpeed = 8; levelTitle.innerHTML = "Title: <b>Expert</b>";}
+                    else if(player.score > 2625 && player.score < 3250) player.objectSpeed = 9;
+                    else if(player.score > 3250 && player.score < 3875) 
+                    { 
+                        player.objectSpeed = 9;
+                        levelTitle.innerHTML = "Title: <b>Master</b>";
+                        if(counter2++ == 0) 
+                        { 
+                            let enecar= document.querySelectorAll('.enemy'); 
+                            enecar.forEach(function(item)
+                            {
+                                item.classList.add('hide');
+                            });      
+                            
+                            createEnemyCar(5); 
+                        }
+                    }
+                    else if(player.score > 3875 && player.score < 4500) player.objectSpeed = 10;
+                    else if(player.score > 4500 && player.score < 5350) { player.objectSpeed = 11; levelTitle.innerHTML = "Title: <b>Grand Master</b>";}
+                    else if(player.score > 5350 && player.score < 6000) 
+                    { 
+                        player.objectSpeed = 11;
+                        if(counter3++ == 0) 
+                        { 
+                            let enecar= document.querySelectorAll('.enemy'); 
+                            enecar.forEach(function(item)
+                            {
+                                item.classList.add('hide');
+                            });      
+                            
+                            createEnemyCar(6); 
+                        }
+                    }
+                    else if(player.score > 6000 && player.score < 6750) { player.objectSpeed = 12;levelTitle.innerHTML = "Title: <b>Legendary</b>";}
+                    else if(player.score > 6750 && player.score < 7500) player.objectSpeed = 13;
+                    else if(player.score > 7500) { player.objectSpeed = 14; levelTitle.innerHTML = "Title: <b>God Level</b>";}
+            }
+
+
+
+            //here gamePlay component where vehicle appear is called in loop for continous movement and anime of objects
+            function gamePlay()
+            {
+                //call the car class in css
+                let car = document.querySelector('.car');
+
+                //below given function gets the dimension and postion of gameArea in terms of width, height, top and bottom
+                let road = gameArea.getBoundingClientRect();
+
+                //calls start() func below and begins game on true
+                if(player.start)
+                {
+                    moveLines();
+                    moveEnemy(car);
+
+                    //these inc or dec the position of car w.r.t to key pressed where amt of pos changed is player.speed value i.e 5
+                    //2nd condition are there to keep the car within the gameArea boundary limits
+                    if((keys.w || keys.ArrowUp) && player.y > (road.top + 70)) { player.y -= player.speed;}
+                    if((keys.s || keys.ArrowDown) && player.y < (road.bottom - 65)) { player.y += player.speed;}
+                    if((keys.a || keys.ArrowLeft) && player.x > 2) { player.x -= player.speed;}
+                    if((keys.d || keys.ArrowRight) && player.x < (road.width - 50)) { player.x += player.speed;}
+
+                    //modifies the position of car by dynamically changing the left and top property of car class that represents the car in game
+                    car.style.top = player.y + "px";
+                    car.style.left = player.x + "px";
+
+                    window.requestAnimationFrame(gamePlay);
+                    
+                    //increases player score by one until gamePlay is in loop
+                    player.score++;
+                    let ps = player.score - 1;
+                    score.innerHTML = "Score: " + ps;
+
+                    //call function gameLevel to update speed w.r.t scores
+                    gameLevels();
+                }                
+                
+            }
+
+
+
+            //called when clicked on startScreem
+            function start()
+            {
+                //plays the music on game start
+                if(musicPlaying == 1) musicAudio.play();
+
+                //hides startScreen area and show only gameArea when player click startScreen Area
+                startScreen.classList.add('hide');
+                
+                //gameArea stays empty until game start because cars, road, lines and enemy car everything is generated on game start
+                gameArea.innerHTML = "";
+
+                //here player confirm by clicking on startScreen that he wants to play
+                player.start = true;
+                //resposible for holding current player score 
+                player.score = 0;
+
+                player.objectSpeed = 5;
+                player.speed = 7;
+
+                //fetching the high score stored in local browser to locallyStoredScore variable
+                if(locallyStoredScore) 
+                {
+                    locallyStoredScore = localStorage.getItem('hscore');
+                    highscore.innerHTML = "HighScore: " + locallyStoredScore;
+                }
+                else localStorage.setItem('hscore', "0");
+                
+                //gameplay component is activeted where animation via moving object occur by uderlining predefined function
+                window.requestAnimationFrame(gamePlay);
+
+                //this loop is used to make mutiple line thoughout the length of road i.e. gameArea
+                //Actually lines div is created inside gamaArea div multiple times
+                for(x = 0; x < 5; x++)
+                {
+                    //this is a div that is added to gameArea div and shows lines in road upon game start
+                    let roadLine = document.createElement('div');
+                    roadLine.setAttribute('class', 'lines');
+
+                    //lines at 150 interval on road i.e gameArea div
+                    roadLine.y = x * 150;
+                    roadLine.style.top = roadLine.y + "px";
+
+                    gameArea.appendChild(roadLine);
+                }
+
+                //car is created as a div in gameArea via JS
+                let car = document.createElement('div');
+                car.setAttribute('class', 'car');
+                
+                //by below given fuction instead of adding car div in gameArea div it is directly added when function called
+                //create car div only when start function is called so that it is visible only upon starting the game
+                gameArea.appendChild(car);
+
+                //in x the position of car w.r.t left margin is gathered & in y the position of car w.r.t top margin is gathered
+                //this obtained value is gathered to inc or dec to move car from its position
+                player.x = car.offsetLeft;
+                player.y = car.offsetTop;
+
+                //creation of enemy car take place
+                createEnemyCar(3);
+                
+            }
+
+
+
+            //creating a div for n enemy cars where class name is enemy 
+            function createEnemyCar(total)
+            {
+                for(x = 0; x < total; x++)
+                {
+                    let enemyCar = document.createElement('div');
+                    enemyCar.setAttribute('class', 'enemy');
+
+                    //enemy cars moving down the game area with decrement of "((x) * 110) * -1"
+                    enemyCar.y = ((x) * 110) * -1;
+                    enemyCar.style.top = enemyCar.y + "px";
+
+                    //making enemy car of random colors
+                    enemyCar.style.backgroundColor = randomColor();
+
+                    //giving random position to enemy cars on road w.r.t width of road
+                    enemyCar.style.left = Math.floor(Math.random() * 350) + "px";
+
+                    //adding enemy cars to gameArea div as a div itself similar to car class properties
+                    gameArea.appendChild(enemyCar);
+
+                }
+            }
+
+
+
+            //provides random colors to enemy cars
+            function randomColor()
+            {
+                //generate 2 digits of hexadecimal color
+                function colorGen()
+                {
+                    //stores hexadecimal value ie base 16 in string format since returning value is string
+                    let hex = Math.floor(Math.random() * 256).toString(16);
+
+                    //we have to return 2-digit values only so when hex store 1-digit value then we need to make it 2-digit
+                    //substr(-2) limts the string to 2 letters only so 2-digit number is returned even if hex has 1-digit value
+                    return ("0" + String(hex)).substr(-2);
+                }
+
+                //to return generated hexadecimal colors
+                return "#" + colorGen() + colorGen() + colorGen();
+            }
+
+
+
+            //Plays the music in game controled by play button
+            function playMusic()
+            {
+                musicPlaying = 1;
+                //plays the music on button click
+                musicAudio.play();
+
+                //opacity to buttons
+                let playButton = document.querySelector('.playButton');
+                playButton.style.opacity = 1;
+                let pauseButton = document.querySelector('.pauseButton');
+                pauseButton.style.opacity = 0.3;
+            }
+
+
+
+            //Pauses the music in game controled by pause button
+            function pauseMusic()
+            {
+                musicPlaying = 0;
+                //pauses the music on button click
+                musicAudio.pause();
+
+                //opacity to buttons
+                let pauseButton = document.querySelector('.pauseButton');
+                pauseButton.style.opacity = 1;
+                let playButton = document.querySelector('.playButton');
+                playButton.style.opacity = 0.3;
+            }
+
+
+        </script>
+
+    </body>
+
+</html>

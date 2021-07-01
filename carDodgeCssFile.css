@@ -1,0 +1,166 @@
+*{margin:0; padding:0; font-family: 'Josefin Sans', sans-serif;}
+
+body{
+    background-image: url('images/bgImage.png');    
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+img{
+    width: 36px; height: 29px; 
+}
+
+
+    .hide{display: none;}
+
+    .carGame{
+        width: 100%; height: 100%;
+        background-image: url('images/bgImage.png');
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .gameTitle{
+        position: absolute; top: 10px;
+        left: 20px; width: 350px;
+        line-height: 60px;
+        background: #ac103f;
+        color: rgb(0, 0, 255);
+        text-align: center;
+        font-size: 1.8em;
+        box-shadow: 0 7px 7px #777;
+    }
+
+    .car{
+        width: 40px; height: 60px;
+        position: absolute; 
+        left: 80px; bottom: 120px;
+        background-image: url('images/playerCar.png');
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .enemy{
+        width: 40px; height: 60px;
+        /*background: #253a41;*/
+        position: absolute; 
+        left: 80px; bottom: 120px;
+        background-image: url('images/car.png');
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+
+    .lines{
+        width: 10px; height: 80px;
+        background: white;
+        position: absolute;
+        margin-left: 195px;
+    }
+
+    .gameArea{
+        width: 400px; height: 100vh;
+        background: #253a41;
+        margin: auto; position: relative;
+        border-right: 7px dashed #c8d6e5;
+        border-left: 7px dashed #c8d6e5;
+    }
+
+    .score{
+        position: absolute; top: 90px;
+        left: 25px; width: 190px;
+        line-height: 50px;
+        background: #10ac84;
+        color: white;
+        text-align: center;
+        font-size: 1.2em;
+        box-shadow: 0 5px 5px #777;
+    }
+
+    .levelTitle{
+        position: absolute; top: 150px;
+        left: 25px; width: 190px;
+        line-height: 50px;
+        background: #10ac84;
+        color: white;
+        text-align: center;
+        font-size: 1em;
+        box-shadow: 0 5px 5px #777;
+    }
+
+    .highscore{
+        position: absolute; top: 210px;
+        left: 25px; width: 190px;
+        line-height: 50px;
+        background: #10ac84;
+        color: white;
+        text-align: center;
+        font-size: 1.2em;
+        box-shadow: 0 5px 5px #777;
+    }
+
+    .instruction{
+        position: absolute; bottom: 15px;
+        right: 30px; width: 400px;
+        color: black;
+        font-weight: bold;
+        font-size: 0.85em;
+    }
+
+    .startScreen{
+        position: absolute;
+        background-color: #ee5253;
+        /*Below 3 properties are used to place a div on another div at centre position from all ends */
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        z-index: 1; /*this put the current div at top of another div*/
+        text-align: center;
+        border: 1px solid #ff6b6b;
+        padding: 15px;
+        margin: auto;
+        width: 50%;
+        cursor: pointer;
+        letter-spacing: 5;
+        font-size: 20px;
+        word-spacing: 3;
+        text-transform: uppercase;
+        box-shadow: 0 5px 5px #777;
+
+    }
+
+    .pauseScreen{
+        position: absolute;
+        background-color: #ee5253;
+        /*Below 3 properties are used to place a div on another div at centre position from all ends */
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        z-index: 1; /*this put the current div at top of another div*/
+        text-align: center;
+        border: 1px solid #ff6b6b;
+        padding: 15px;
+        margin: auto;
+        width: 50%;
+        cursor: pointer;
+        letter-spacing: 5;
+        font-size: 20px;
+        word-spacing: 3;
+        text-transform: uppercase;
+        box-shadow: 0 5px 5px #777;
+
+    }
+
+    .playButton{
+        width: 45px; height: 35px;
+        position: absolute; 
+        right: 45px; bottom: 120px;
+    }
+
+    .pauseButton{
+        width: 45px; height: 35px;
+        position: absolute; 
+        right: 45px; bottom: 70px;
+        opacity: 0.5;
+    }
