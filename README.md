@@ -1,5 +1,5 @@
 # DODGE MANIA GAME
-**Built using JavaScript and some HTML and CSS for inputs and styling.There is a window.requestAnimationFrame() method that plays major role for the game animation. It tells the browser that you wish to perform an animation and requests that the browser calls a specified function to update an animation before the next repaint. All these makes it a fasinating car dodge game that allow the player to dodge other cars upon game start and reach higher scores.**   
+**Built using JavaScript and some HTML and CSS for inputs and styling. There is a window.requestAnimationFrame() method that plays a major role in the game animation. It tells the browser that you wish to perform an animation and requests that the browser calls a specified function to update an animation before the next repaint. All these make it a fascinating car dodge game that allows the player to dodge other cars upon game start and reach higher scores.**   
   
 ## FEATURES  
 > Iteractive & Involving  
@@ -12,14 +12,14 @@
 > Metally & Physically Stimulating  
   
 ## PROCESS TO SETUP  
-Step 1 - Download the project from github in zip file format.  
-Step 2 - Extract the zip file on a folder.  
-Step 3 - Run the carDodgeHtmlFile.html file on local browser.  
+Step 1 - Download the project from GitHub in zip file format.  
+Step 2 - Extract the zip file to a folder.  
+Step 3 - Run the carDodgeHtmlFile.html file on the local browser.  
 Step 4 - Now you are all set to enjoy the game😄.  
   
 ## INSTRUCTION FOR GAME  
 1. Use Arrow keys to move in all four directions.  
-2. Use Space to pause and resume game(only thrice in a run).  
+2. Use Space to pause and resume the game(only thrice in a run).  
 3. Prevent hitting other cars to reach higher scores.  
 4. Level increases with the increase in score.  
 5. Press Arrow-Up⬆ or enter to start the game.  
