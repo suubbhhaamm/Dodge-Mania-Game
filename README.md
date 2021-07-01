@@ -22,7 +22,7 @@ Step 4 - Now you are all set to enjoy the game😄.
 2. Use Space to pause and resume game(only thrice in a run).  
 3. Prevent hitting other cars to reach higher scores.  
 4. Level increases with the increase in score.  
-5. Press Arrow-Up(⬆) or enter to start the game.  
+5. Press Arrow-Up⬆ or enter to start the game.  
   
 ## USER INTERFACE OF THE GAME  
 ![game-start-UI](https://user-images.githubusercontent.com/33429953/124158123-2a640380-dab7-11eb-9b63-10dcd924d6fc.png)  
